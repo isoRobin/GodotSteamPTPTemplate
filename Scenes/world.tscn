@@ -62,7 +62,6 @@ grow_vertical = 2
 mouse_filter = 1
 
 [node name="MainMenu" type="Control" parent="CanvasLayer/Control"]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -94,7 +93,6 @@ layout_mode = 2
 text = "Multiplayer"
 
 [node name="MultiplayerSelectMenu" type="Control" parent="CanvasLayer/Control"]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -126,6 +124,14 @@ layout_mode = 2
 text = "Local
 "
 
+[node name="BackToMainMenuButton" type="Button" parent="CanvasLayer/Control/MultiplayerSelectMenu"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 603.0
+offset_right = 186.0
+offset_bottom = 639.0
+text = "Back To Main Menu"
+
 [node name="LocalMultiplayerMenu" type="Control" parent="CanvasLayer/Control"]
 layout_mode = 1
 anchors_preset = 15
@@ -140,25 +146,32 @@ anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -130.0
-offset_top = 132.0
-offset_right = 130.0
-offset_bottom = -180.0
+offset_left = -162.0
+offset_top = 145.0
+offset_right = 161.0
+offset_bottom = -167.0
 grow_horizontal = 2
 grow_vertical = 2
 
 [node name="HostButton" type="Button" parent="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 text = "Host"
 
 [node name="JoinButton" type="Button" parent="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer"]
-custom_minimum_size = Vector2(200, 0)
+custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
 text = "Join"
 
+[node name="BackToMainMenuButton" type="Button" parent="CanvasLayer/Control/LocalMultiplayerMenu"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 603.0
+offset_right = 136.0
+offset_bottom = 639.0
+text = "Back To Main Menu"
+
 [node name="PublicMultiplayerMenu" type="Control" parent="CanvasLayer/Control"]
-visible = false
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -207,13 +220,24 @@ offset_bottom = 545.0
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/PublicMultiplayerMenu/ScrollContainer"]
 layout_mode = 2
 
+[node name="BackToMenuButton" type="Button" parent="CanvasLayer/Control/PublicMultiplayerMenu"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 603.0
+offset_right = 136.0
+offset_bottom = 639.0
+text = "Back To Menu"
+
 [node name="MapContainer" type="Node" parent="."]
 
 [connection signal="pressed" from="CanvasLayer/Control/MainMenu/VBoxContainer/SingleplayerButton" to="MenuManager" method="_on_singleplayer_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/MainMenu/VBoxContainer/MultiplayerButton" to="MenuManager" method="_on_multiplayer_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/MultiplayerSelectMenu/VBoxContainer/PublicMultiplayerButton" to="MenuManager" method="_on_public_multiplayer_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/MultiplayerSelectMenu/VBoxContainer/LocalMultiplayerButton" to="MenuManager" method="_on_local_multiplayer_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/MultiplayerSelectMenu/BackToMainMenuButton" to="MenuManager" method="_on_back_to_main_menu_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer/HostButton" to="MenuManager" method="_on_local_host_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer/JoinButton" to="MenuManager" method="_on_local_join_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/LocalMultiplayerMenu/BackToMainMenuButton" to="MenuManager" method="_on_back_to_main_menu_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/PublicMultiplayerMenu/HBoxContainer/HostButton" to="MenuManager" method="_on_public_host_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/PublicMultiplayerMenu/HBoxContainer/RefreshButton" to="MenuManager" method="_on_refresh_lobby_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Control/PublicMultiplayerMenu/BackToMenuButton" to="MenuManager" method="_on_back_to_menu_button_pressed"]

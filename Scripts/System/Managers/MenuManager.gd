@@ -55,3 +55,11 @@ func _on_local_host_button_pressed():
 func _on_local_join_button_pressed():
 	hide_main_canvas()
 	lobby_manager.join_local_lobby()
+
+func _on_back_to_menu_button_pressed() -> void:
+	hide_all_menus()
+	multiplayer_select_menu.show()
+
+func _on_back_to_main_menu_button_pressed() -> void:
+	hide_all_menus()
+	main_menu.show()
