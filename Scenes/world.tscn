@@ -85,11 +85,13 @@ grow_vertical = 2
 [node name="SingleplayerButton" type="Button" parent="CanvasLayer/Control/MainMenu/VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "Singleplayer"
 
 [node name="MultiplayerButton" type="Button" parent="CanvasLayer/Control/MainMenu/VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "Multiplayer"
 
 [node name="MultiplayerSelectMenu" type="Control" parent="CanvasLayer/Control"]
@@ -116,11 +118,13 @@ grow_vertical = 2
 [node name="PublicMultiplayerButton" type="Button" parent="CanvasLayer/Control/MultiplayerSelectMenu/VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "Public"
 
 [node name="LocalMultiplayerButton" type="Button" parent="CanvasLayer/Control/MultiplayerSelectMenu/VBoxContainer"]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "Local
 "
 
@@ -130,6 +134,7 @@ offset_left = 9.0
 offset_top = 603.0
 offset_right = 186.0
 offset_bottom = 639.0
+mouse_default_cursor_shape = 2
 text = "Back To Main Menu"
 
 [node name="LocalMultiplayerMenu" type="Control" parent="CanvasLayer/Control"]
@@ -156,11 +161,13 @@ grow_vertical = 2
 [node name="HostButton" type="Button" parent="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "Host"
 
 [node name="JoinButton" type="Button" parent="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer"]
 custom_minimum_size = Vector2(200, 50)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "Join"
 
 [node name="BackToMainMenuButton" type="Button" parent="CanvasLayer/Control/LocalMultiplayerMenu"]
@@ -169,6 +176,7 @@ offset_left = 9.0
 offset_top = 603.0
 offset_right = 136.0
 offset_bottom = 639.0
+mouse_default_cursor_shape = 2
 text = "Back To Main Menu"
 
 [node name="PublicMultiplayerMenu" type="Control" parent="CanvasLayer/Control"]
@@ -195,11 +203,13 @@ alignment = 1
 [node name="HostButton" type="Button" parent="CanvasLayer/Control/PublicMultiplayerMenu/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "HOST"
 
 [node name="RefreshButton" type="Button" parent="CanvasLayer/Control/PublicMultiplayerMenu/HBoxContainer"]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
+mouse_default_cursor_shape = 2
 text = "REFRESH"
 
 [node name="Panel" type="Panel" parent="CanvasLayer/Control/PublicMultiplayerMenu"]
@@ -226,6 +236,7 @@ offset_left = 9.0
 offset_top = 603.0
 offset_right = 136.0
 offset_bottom = 639.0
+mouse_default_cursor_shape = 2
 text = "Back To Menu"
 
 [node name="MapContainer" type="Node" parent="."]

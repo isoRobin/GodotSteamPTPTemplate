@@ -6,14 +6,12 @@
 * OR git clone
 
 ## Prerequisites
-* Godot 4.x version required
 * [Godot Steam Peer To Peer](https://godotsteam.com/#download-it)
-
 
 ### Features
 * Steam Peer To Peer Multiplayer Support
 * Local Multiplayer Support (Used For Testing Your Game)
-* Singleplayer Support
+* Singleplayer Support (can be removed)
 
 ### Resources & What is used in project
 * [Godot Steam](https://godotsteam.com)
