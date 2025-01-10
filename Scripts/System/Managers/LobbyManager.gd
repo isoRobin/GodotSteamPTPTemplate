@@ -1,6 +1,5 @@
 extends Node
 
-
 ## INFO: Export variables
 @export var network_manager : Node
 @export var map_spawner : MultiplayerSpawner
