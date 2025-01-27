@@ -12,6 +12,8 @@ var local_lobby_id : int = 1
 @export var local_port : int = 5000
 @export var local_max_players : int = 4
 @export var debug_local : bool = false
+@export_category("Local Lobby Filtering")
+@export var max_players_local_filter: SpinBox
 
 @export_category("Steam Lobby")
 var steam_lobby_id = 1
@@ -67,6 +69,7 @@ func setup_filters():
 	max_players_filter.value_changed.connect(_on_max_players_filter_changed)
 	has_password_filter.toggled.connect(_on_password_filter_changed)
 	friends_only_filter.toggled.connect(_on_friends_only_filter_changed)
+	max_players_local_filter.value_changed.connect(_on_max_local_players_filter_changed)
 	
 	for key in DISTANCE_FILTERS.keys():
 		distance_filter.add_item(key)
@@ -123,7 +126,10 @@ func _on_name_filter_changed(new_text: String):
 func _on_max_players_filter_changed(value: int):
 	current_filters["max_players"] = value
 	apply_filters()
-
+	
+func _on_max_local_players_filter_changed(value: int):
+	local_max_players = value
+		
 func _on_password_filter_changed(toggled: bool):
 	current_filters["has_password"] = toggled
 	apply_filters()
@@ -249,6 +255,7 @@ func create_steam_lobby():
 func join_local_lobby():
 	var err = network_manager.get_peer().create_client(local_addr, local_port)
 	if err != OK: print(err)
+	
 	network_manager.update_multiplayer_peer()
 
 func join_steam_lobby(id):
