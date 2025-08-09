@@ -1,6 +1,6 @@
 [gd_scene load_steps=4 format=3 uid="uid://b7pp3skomvnhc"]
 
-[ext_resource type="Script" path="res://Scripts/System/Networking/PlayerSpawner.gd" id="1_gojf1"]
+[ext_resource type="Script" uid="uid://dgc18acbwmq5r" path="res://Scripts/System/Networking/PlayerSpawner.gd" id="1_gojf1"]
 [ext_resource type="PackedScene" uid="uid://tv4ar5fv1s6e" path="res://Scenes/player.tscn" id="2_fehjn"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_okv1i"]

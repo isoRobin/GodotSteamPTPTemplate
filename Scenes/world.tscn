@@ -1,36 +1,16 @@
-[gd_scene load_steps=14 format=3 uid="uid://cv44tvj0o5jcf"]
+[gd_scene load_steps=10 format=3 uid="uid://cv44tvj0o5jcf"]
 
-[ext_resource type="Script" path="res://Scripts/System/Managers/SteamManager.gd" id="1_b1cy8"]
-[ext_resource type="Script" path="res://Scripts/System/Managers/LobbyManager.gd" id="2_tpclr"]
-[ext_resource type="Script" path="res://Scripts/System/Networking/NetworkManager.gd" id="3_hsc1b"]
-[ext_resource type="Script" path="res://Scripts/System/Managers/MenuManager.gd" id="4_07e24"]
-[ext_resource type="Script" path="res://Scripts/System/Managers/MapManager.gd" id="5_qqweo"]
+[ext_resource type="Script" uid="uid://ba22463vxe7am" path="res://Scripts/System/Managers/SteamManager.gd" id="1_b1cy8"]
+[ext_resource type="Script" uid="uid://bnjcjurcia754" path="res://Scripts/System/Managers/LobbyManager.gd" id="2_tpclr"]
+[ext_resource type="Script" uid="uid://b5rnxougwr1ld" path="res://Scripts/System/Networking/NetworkManager.gd" id="3_hsc1b"]
+[ext_resource type="Script" uid="uid://dp64c7r7ww8b1" path="res://Scripts/System/Managers/MenuManager.gd" id="4_07e24"]
+[ext_resource type="Script" uid="uid://batm0cyt6bj5i" path="res://Scripts/System/Managers/MapManager.gd" id="5_qqweo"]
 [ext_resource type="PackedScene" uid="uid://b7pp3skomvnhc" path="res://Scenes/level.tscn" id="6_1scc6"]
 [ext_resource type="Theme" uid="uid://c4f2loxebxryi" path="res://Assets/Theme/main.tres" id="7_gin60"]
-[ext_resource type="Script" path="res://Scenes/check_box.gd" id="8_pctin"]
+[ext_resource type="Script" uid="uid://7dxfof7x5uj7" path="res://Scenes/check_box.gd" id="8_pctin"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_nfy72"]
 font_size = 25
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_r7vnu"]
-bg_color = Color(0.176349, 0.176349, 0.176349, 1)
-border_width_right = 2
-border_width_bottom = 2
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bvsv5"]
-bg_color = Color(0.176349, 0.176349, 0.176349, 1)
-border_width_left = 2
-border_width_bottom = 2
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_2aa3f"]
-bg_color = Color(0.176349, 0.176349, 0.176349, 1)
-border_width_top = 2
-border_width_right = 2
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_fv1h1"]
-bg_color = Color(0.176349, 0.176349, 0.176349, 1)
-border_width_left = 2
-border_width_top = 2
 
 [node name="World" type="Node3D"]
 
@@ -242,12 +222,6 @@ layout_mode = 2
 mouse_default_cursor_shape = 2
 text = "Join"
 
-[node name="HostButton2" type="Button" parent="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer"]
-custom_minimum_size = Vector2(0, 60)
-layout_mode = 2
-mouse_default_cursor_shape = 2
-text = "Split Screen Lobby"
-
 [node name="BackToMainMenuButton" type="Button" parent="CanvasLayer/Control/LocalMultiplayerMenu"]
 layout_mode = 0
 offset_left = 9.0
@@ -256,170 +230,6 @@ offset_right = 136.0
 offset_bottom = 639.0
 mouse_default_cursor_shape = 2
 text = "Back To Main Menu"
-
-[node name="SplitScreenMultiplayerMenu" type="Control" parent="CanvasLayer/Control"]
-visible = false
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="LocalSplitSreenGridContainer" type="GridContainer" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu"]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-columns = 2
-
-[node name="P1Container" type="SubViewportContainer" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-stretch = true
-
-[node name="SubViewport" type="SubViewport" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P1Container"]
-handle_input_locally = false
-size = Vector2i(574, 648)
-render_target_update_mode = 0
-
-[node name="Panel" type="Panel" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P1Container/SubViewport"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_r7vnu")
-
-[node name="Label" type="Label" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P1Container/SubViewport"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -99.0
-offset_top = -24.5
-offset_right = 99.0
-offset_bottom = 24.5
-grow_horizontal = 2
-grow_vertical = 2
-text = "Player 1
-Looking For Controller"
-horizontal_alignment = 1
-
-[node name="P2Container" type="SubViewportContainer" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-stretch = true
-
-[node name="SubViewport" type="SubViewport" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P2Container"]
-handle_input_locally = false
-size = Vector2i(574, 648)
-render_target_update_mode = 0
-
-[node name="Panel" type="Panel" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P2Container/SubViewport"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_bvsv5")
-
-[node name="Label" type="Label" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P2Container/SubViewport"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -99.0
-offset_top = -24.5
-offset_right = 99.0
-offset_bottom = 24.5
-grow_horizontal = 2
-grow_vertical = 2
-text = "Player 2
-Looking For Controller"
-horizontal_alignment = 1
-
-[node name="P3Container" type="SubViewportContainer" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer"]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-stretch = true
-
-[node name="SubViewport" type="SubViewport" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P3Container"]
-handle_input_locally = false
-size = Vector2i(574, 322)
-render_target_update_mode = 0
-
-[node name="Panel" type="Panel" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P3Container/SubViewport"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_2aa3f")
-
-[node name="Label" type="Label" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P3Container/SubViewport"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -99.0
-offset_top = -24.5
-offset_right = 99.0
-offset_bottom = 24.5
-grow_horizontal = 2
-grow_vertical = 2
-text = "Player 3
-Looking For Controller"
-horizontal_alignment = 1
-
-[node name="P4Container" type="SubViewportContainer" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer"]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-stretch = true
-
-[node name="SubViewport" type="SubViewport" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P4Container"]
-handle_input_locally = false
-size = Vector2i(574, 322)
-render_target_update_mode = 0
-
-[node name="Panel" type="Panel" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P4Container/SubViewport"]
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
-mouse_filter = 1
-theme_override_styles/panel = SubResource("StyleBoxFlat_fv1h1")
-
-[node name="Label" type="Label" parent="CanvasLayer/Control/SplitScreenMultiplayerMenu/LocalSplitSreenGridContainer/P4Container/SubViewport"]
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -99.0
-offset_top = -24.5
-offset_right = 99.0
-offset_bottom = 24.5
-grow_horizontal = 2
-grow_vertical = 2
-text = "Player 4
-Looking For Controller"
-horizontal_alignment = 1
 
 [node name="PublicMultiplayerMenu" type="Control" parent="CanvasLayer/Control"]
 visible = false
@@ -586,7 +396,6 @@ placeholder_text = "Password"
 [connection signal="pressed" from="CanvasLayer/Control/MultiplayerSelectMenu/BackToMainMenuButton" to="MenuManager" method="_on_back_to_main_menu_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer/HostButton" to="MenuManager" method="_on_local_host_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer/JoinButton" to="MenuManager" method="_on_local_join_button_pressed"]
-[connection signal="pressed" from="CanvasLayer/Control/LocalMultiplayerMenu/VBoxContainer/HostButton2" to="MenuManager" method="_on_local_host_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/LocalMultiplayerMenu/BackToMainMenuButton" to="MenuManager" method="_on_back_to_main_menu_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/PublicMultiplayerMenu/RefreshButton" to="MenuManager" method="_on_refresh_lobby_button_pressed"]
 [connection signal="pressed" from="CanvasLayer/Control/PublicMultiplayerMenu/BackToMenuButton" to="MenuManager" method="_on_back_to_menu_button_pressed"]

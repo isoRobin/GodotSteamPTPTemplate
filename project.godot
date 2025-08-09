@@ -13,7 +13,7 @@ config_version=5
 config/name="GodotSteamLocalSingleplayerTemplate"
 config/tags=PackedStringArray("template")
 run/main_scene="res://Scenes/world.tscn"
-config/features=PackedStringArray("4.3", "Forward Plus")
+config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
 [editor_plugins]

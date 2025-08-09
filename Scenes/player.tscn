@@ -1,7 +1,7 @@
 [gd_scene load_steps=6 format=3 uid="uid://tv4ar5fv1s6e"]
 
-[ext_resource type="Script" path="res://addons/Basic FPS Player/Src/basic_player_startup.gd" id="1_4m64u"]
-[ext_resource type="Script" path="res://Scripts/System/Networking/PlayerSyncManager.gd" id="2_ujs6x"]
+[ext_resource type="Script" uid="uid://cr6pnoxxyo6pm" path="res://addons/Basic FPS Player/Src/basic_player_startup.gd" id="1_4m64u"]
+[ext_resource type="Script" uid="uid://bio5h328kx3dw" path="res://Scripts/System/Networking/PlayerSyncManager.gd" id="2_ujs6x"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_e0fv5"]
 albedo_color = Color(0.266667, 1, 1, 1)
