@@ -21,6 +21,9 @@ func _ready():
 		multiplayer.peer_disconnected.connect(remove_player)
 	
 func spawn_player(data):
+	if not is_inside_tree():
+		await ready  # wait until the node is ready
+	# Now safe to use get_global_transform()
 	var player : CharacterBody3D = player_scene.instantiate()
 	player.set_multiplayer_authority(data)
 	players[data] = player

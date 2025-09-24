@@ -59,3 +59,8 @@ jump={
 [layer_names]
 
 3d_render/layer_6="DEBUG_ONLY"
+
+[rendering]
+
+renderer/rendering_method="gl_compatibility"
+renderer/rendering_method.mobile="gl_compatibility"

@@ -27,3 +27,4 @@ func set_peer_mode(peer_mode : PeerMode):
 
 func reset_peer():
 	set_peer_mode(PeerMode.NONE)
+	

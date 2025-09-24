@@ -213,7 +213,7 @@ func setup_local_lobbies():
 
 func setup_steam_lobbies():
 	network_manager.set_peer_mode(network_manager.PeerMode.STEAM)
-	network_manager.get_peer().lobby_created.connect(_on_steam_lobby_created)
+	Steam.lobby_created.connect(_on_steam_lobby_created)
 	Steam.lobby_match_list.connect(_on_steam_lobby_match_list)
 	refresh_steam_lobby_list()
 	
@@ -233,21 +233,21 @@ func create_local_lobby():
 	
 func create_steam_lobby():
 	var lobby_type = LOBBY_TYPES.PUBLIC
-	var max_players = host_max_players.value
 	var is_password_protected = host_password_protected.button_pressed
 	var password = host_password_input.text if is_password_protected else ""
 	
-	# Set appropriate lobby type
+	# Decide lobby type
 	if host_friends_only.button_pressed:
 		lobby_type = LOBBY_TYPES.FRIENDS_ONLY
 	elif is_password_protected:
 		lobby_type = LOBBY_TYPES.PRIVATE
 	
-	# Create the lobby
-	network_manager.get_peer().create_lobby(lobby_type)
-	network_manager.update_multiplayer_peer()
-	map_spawner.spawn(map_manager.lobby_scene_path)
-	on_steam_lobby_created.emit()
+	var max_players = host_max_players.value
+	
+	# --- NEW: Create Steam lobby asynchronously ---
+	Steam.createLobby(lobby_type, max_players)
+	print("Requesting Steam to create lobby...")
+	# Rest handled in `_on_steam_lobby_created`
 	
 #endregion
 	
@@ -257,15 +257,48 @@ func join_local_lobby():
 	if err != OK: print(err)
 	
 	network_manager.update_multiplayer_peer()
+	
+func _on_joined_session() -> void:
+	var my_id = multiplayer.get_unique_id()
+	var player_scene = preload("res://scenes/Player.tscn")
+	var player = player_scene.instantiate()
+	player.name = "Player_%s" % my_id
+	player.set_multiplayer_authority(my_id)
 
-func join_steam_lobby(id):
+	var players_node = get_tree().root.find_child("Players", true, false)
+	if players_node:
+		players_node.add_child(player)
+		print("Spawned into session as", my_id)
+	else:
+		push_error("Could not find 'Players' node after joining session")
+
+
+func join_steam_lobby(id: int) -> void:
 	if await validate_lobby_join(id):
-		network_manager.get_peer().connect_lobby(id)
+		var err = network_manager.get_peer().connect_to_lobby(id)
+		if err != OK:
+			push_error("Failed to join Steam lobby: %s" % err)
+			return
+		
 		network_manager.update_multiplayer_peer()
 		steam_lobby_id = id
+
+		# Hide menu like before
+		if menu_manager:
+			menu_manager.hide_main_canvas()
+
+		map_spawner.spawn(map_manager.lobby_scene_path)
+
+		# Wait until the Players node exists
+		while not get_tree().root.find_child("Players", true, false):
+			await get_tree().process_frame
+
+		_on_joined_session()
+		print("Joined Steam lobby:", id)
 	else:
 		print("Invalid password or cancelled")
-		
+
+
 #endregion
 
 func _on_local_player_connect_lobby(id):
@@ -283,29 +316,38 @@ func update_lobby_name():
 		var formatted_name = "%s (%d/%d)" % [base_name, current_players, max_players]
 		Steam.setLobbyData(steam_lobby_id, "name", formatted_name)
 
-func _on_steam_lobby_created(connected, id):
-	if connected:
-		steam_lobby_id = id
+func _on_steam_lobby_created(connect: int, lobby_id: int) -> void:
+	# Steam returns a result code (connect), 1 usually means success
+	if connect == OK or connect == 1:
+		steam_lobby_id = lobby_id
+		print("Steam lobby created! ID:", steam_lobby_id)
 		
-		# Set basic lobby data
-		update_lobby_name()  # Set initial name with player count
-		Steam.setLobbyData(steam_lobby_id, "max_players", str(host_max_players.value))
+		# --- NEW: Host the Steam lobby with MultiplayerPeer ---
+		var err = network_manager.get_peer().host_with_lobby(lobby_id)
+		if err != OK:
+			push_error("Failed to host Steam lobby: %s" % err)
+			return
 		
-		# Set password protection status
+		network_manager.update_multiplayer_peer()
+		map_spawner.spawn(map_manager.lobby_scene_path)
+		on_steam_lobby_created.emit()
+		
+		# Set metadata
+		update_lobby_name()
+		Steam.setLobbyData(lobby_id, "max_players", str(host_max_players.value))
+		
 		if host_password_protected.button_pressed:
-			Steam.setLobbyData(steam_lobby_id, "has_password", "1")
-			Steam.setLobbyData(steam_lobby_id, "password", host_password_input.text)
+			Steam.setLobbyData(lobby_id, "has_password", "1")
+			Steam.setLobbyData(lobby_id, "password", host_password_input.text)
 		else:
-			Steam.setLobbyData(steam_lobby_id, "has_password", "0")
+			Steam.setLobbyData(lobby_id, "has_password", "0")
 		
-		# Set member limit
-		Steam.setLobbyMemberLimit(steam_lobby_id, host_max_players.value)
+		Steam.setLobbyMemberLimit(lobby_id, host_max_players.value)
+		Steam.setLobbyJoinable(lobby_id, true)
 		
-		# Make the lobby joinable
-		Steam.setLobbyJoinable(steam_lobby_id, true)
-		
-		print(steam_lobby_id, " Running")
-
+		print("Lobby setup complete and joinable.")
+	else:
+		push_error("Steam lobby creation failed: %s" % connect)
 		
 signal password_submitted(password: String)
 func prompt_for_password() -> String:
