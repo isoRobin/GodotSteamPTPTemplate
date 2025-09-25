@@ -25,5 +25,3 @@ func _process(delta: float) -> void:
 	# read all packets
 	#p2p message packets
 	Steam.run_callbacks()
-
-## VOICE
