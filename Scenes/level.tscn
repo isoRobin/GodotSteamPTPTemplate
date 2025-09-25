@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" uid="uid://cdn1wi05mdwml" path="res://Scenes/Level.gd" id="1_6phgx"]
 [ext_resource type="Script" uid="uid://dgc18acbwmq5r" path="res://Scripts/System/Networking/PlayerSpawner.gd" id="1_gojf1"]
-[ext_resource type="PackedScene" uid="uid://tv4ar5fv1s6e" path="res://Scenes/player.tscn" id="2_fehjn"]
+[ext_resource type="PackedScene" uid="uid://2qsjh5aaptj8" path="res://ImportedStuff/character.tscn" id="3_6phgx"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_okv1i"]
 transparency = 1
@@ -19,7 +19,7 @@ transform = Transform3D(1, 0, 0, 0, 0.628194, 0.778057, 0, -0.778057, 0.628194, 
 [node name="PlayerSpawner" type="MultiplayerSpawner" parent="." node_paths=PackedStringArray("spawn_points")]
 spawn_path = NodePath("../Players")
 script = ExtResource("1_gojf1")
-player_scene = ExtResource("2_fehjn")
+player_scene = ExtResource("3_6phgx")
 spawn_points = [NodePath("../Players/SpawnPoint01"), NodePath("../Players/SpawnPoint02"), NodePath("../Players/SpawnPoint03"), NodePath("../Players/SpawnPoint04")]
 spawn_in_empty = true
 

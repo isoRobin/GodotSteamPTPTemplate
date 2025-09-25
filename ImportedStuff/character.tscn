@@ -1,0 +1,101 @@
+[gd_scene load_steps=10 format=3 uid="uid://2qsjh5aaptj8"]
+
+[ext_resource type="PackedScene" uid="uid://bl7llikvsg7ra" path="res://ImportedStuff/character_template.glb" id="1_pjt0s"]
+[ext_resource type="Script" uid="uid://cgkbw8m1etwpj" path="res://ImportedStuff/player.gd" id="1_wa5vi"]
+[ext_resource type="Script" uid="uid://c535ryragxa68" path="res://ImportedStuff/head.gd" id="2_wa5vi"]
+[ext_resource type="Script" uid="uid://y17pmo6x83e1" path="res://ImportedStuff/voice_chat.gd" id="4_0qfo5"]
+[ext_resource type="Script" uid="uid://dkb8ltjc6067n" path="res://addons/raytraced_audio/raytraced_audio_player_3d.gd" id="5_yxww1"]
+[ext_resource type="Script" uid="uid://bjpmu5sklv5h8" path="res://addons/raytraced_audio/raytraced_audio_listener.gd" id="6_wdpcj"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wfnr8"]
+radius = 0.259273
+height = 0.975361
+
+[sub_resource type="SceneReplicationConfig" id="SceneReplicationConfig_wa5vi"]
+properties/0/path = NodePath(".:position")
+properties/0/spawn = true
+properties/0/replication_mode = 2
+properties/1/path = NodePath(".:rotation")
+properties/1/spawn = true
+properties/1/replication_mode = 2
+properties/2/path = NodePath(".:velocity")
+properties/2/spawn = true
+properties/2/replication_mode = 2
+
+[sub_resource type="AudioStreamGenerator" id="AudioStreamGenerator_yxww1"]
+mix_rate = 48000.0
+
+[node name="Character" type="CharacterBody3D"]
+script = ExtResource("1_wa5vi")
+
+[node name="character_template" parent="." instance=ExtResource("1_pjt0s")]
+transform = Transform3D(-0.332393, 0, -2.90588e-08, 0, 0.332393, 0, 2.90588e-08, 0, -0.332393, 0, 0, 0)
+
+[node name="Skeleton3D" parent="character_template/mp3d" index="0"]
+bones/0/rotation = Quaternion(0.561215, -3.19269e-17, 5.26733e-17, 0.82767)
+bones/1/rotation = Quaternion(-0.264019, 8.69434e-17, 2.00394e-17, 0.964518)
+bones/2/position = Vector3(5.691e-22, 1.76932, 1.42109e-14)
+bones/2/rotation = Quaternion(-0.452137, -0.543665, -0.452137, 0.543665)
+bones/2/scale = Vector3(1, 1, 1)
+bones/3/rotation = Quaternion(-0.0773897, -0.0479343, -0.633187, 0.768627)
+bones/4/rotation = Quaternion(0.00869078, 5.20509e-08, 4.22949e-09, 0.999962)
+bones/5/position = Vector3(-5.691e-22, 1.76932, 1.42109e-14)
+bones/5/rotation = Quaternion(-0.452137, 0.543665, 0.452137, 0.543665)
+bones/5/scale = Vector3(1, 1, 1)
+bones/6/rotation = Quaternion(-0.0773897, 0.0479343, 0.633187, 0.768627)
+bones/7/rotation = Quaternion(0.00869078, -5.20509e-08, -4.22949e-09, 0.999962)
+bones/8/position = Vector3(4.5741e-08, 1.76932, -1.06581e-14)
+bones/8/rotation = Quaternion(0.466707, -0.191596, 0.746616, -0.433637)
+bones/8/scale = Vector3(1, 1, 1)
+bones/9/rotation = Quaternion(-0.201287, 0.00824535, 0.0706533, 0.976946)
+bones/10/rotation = Quaternion(-0.000274331, 7.49209e-08, -1.02367e-09, 1)
+bones/11/rotation = Quaternion(0.0119414, -0.000108734, 0.0182714, 0.999762)
+bones/12/rotation = Quaternion(0.048905, 0.016826, -0.449089, 0.891989)
+bones/13/position = Vector3(-4.5741e-08, 1.76932, -1.06581e-14)
+bones/13/rotation = Quaternion(-0.466707, -0.191596, 0.746615, 0.433637)
+bones/13/scale = Vector3(1, 1, 1)
+bones/14/rotation = Quaternion(-0.175942, -0.0664065, -0.253635, 0.948843)
+bones/15/rotation = Quaternion(-0.00276769, -0.00329032, 0.00137581, 0.99999)
+bones/16/rotation = Quaternion(0.0119414, 0.000108732, -0.0182714, 0.999762)
+bones/17/rotation = Quaternion(0.048905, -0.016826, 0.449089, 0.891989)
+
+[node name="AnimationPlayer" parent="character_template" index="1"]
+autoplay = "idle"
+playback_default_blend_time = 0.2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.495346, 0)
+shape = SubResource("CapsuleShape3D_wfnr8")
+
+[node name="Head" type="Node3D" parent="."]
+transform = Transform3D(-1, 0, -8.74228e-08, 0, 1, 0, 8.74228e-08, 0, -1, 0, 0.831001, 0)
+script = ExtResource("2_wa5vi")
+
+[node name="Camera3D" type="Camera3D" parent="Head"]
+transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, -0.0221288, 0)
+fov = 77.8941
+
+[node name="MultiplayerSynchronizer" type="MultiplayerSynchronizer" parent="."]
+replication_config = SubResource("SceneReplicationConfig_wa5vi")
+
+[node name="VoiceChat" type="Node3D" parent="." node_paths=PackedStringArray("voice_player", "mic")]
+script = ExtResource("4_0qfo5")
+voice_player = NodePath("RaytracedAudioPlayer3D")
+mic = NodePath("microphone")
+
+[node name="microphone" type="AudioStreamPlayer" parent="VoiceChat"]
+bus = &"mic"
+
+[node name="RaytracedAudioPlayer3D" type="AudioStreamPlayer3D" parent="VoiceChat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.675575, -0.468123)
+stream = SubResource("AudioStreamGenerator_yxww1")
+script = ExtResource("5_yxww1")
+audibility_threshold_db = null
+metadata/_custom_type_script = "uid://dkb8ltjc6067n"
+
+[node name="RaytracedAudioListener" type="AudioListener3D" parent="VoiceChat"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.659067, -0.426239)
+script = ExtResource("6_wdpcj")
+metadata/_custom_type_script = "uid://bjpmu5sklv5h8"
+
+[editable path="character_template"]
