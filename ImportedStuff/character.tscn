@@ -5,7 +5,7 @@
 [ext_resource type="Script" uid="uid://c535ryragxa68" path="res://ImportedStuff/head.gd" id="2_wa5vi"]
 [ext_resource type="Script" uid="uid://y17pmo6x83e1" path="res://ImportedStuff/voice_chat.gd" id="4_0qfo5"]
 [ext_resource type="Script" uid="uid://dkb8ltjc6067n" path="res://addons/raytraced_audio/raytraced_audio_player_3d.gd" id="5_yxww1"]
-[ext_resource type="Script" uid="uid://bjpmu5sklv5h8" path="res://ImportedStuff/raytraced_audio/raytraced_audio_listener.gd" id="6_wdpcj"]
+[ext_resource type="Script" uid="uid://bjpmu5sklv5h8" path="res://addons/raytraced_audio/raytraced_audio_listener.gd" id="6_wdpcj"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_wfnr8"]
 radius = 0.259273
