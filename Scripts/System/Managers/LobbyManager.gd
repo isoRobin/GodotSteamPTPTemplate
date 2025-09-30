@@ -226,7 +226,7 @@ func join_steam_lobby(id: int) -> void:
 		print("Invalid password or cancelled")
 
 func _on_steam_lobby_joined(lobby_id: int, chat_permissions: int, locked: bool, response: int) -> void:
-	if response != OK:
+	if response != Steam.CHAT_ROOM_ENTER_RESPONSE_SUCCESS:
 		var reason = STEAM_RESULT_CODES.get(response, "Unknown")
 		push_error("Failed to join Steam lobby. Result code: %s (%s)" % [response, reason])
 		return
