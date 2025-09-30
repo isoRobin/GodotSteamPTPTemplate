@@ -91,9 +91,16 @@ func setup_local_lobbies():
 
 func setup_steam_lobbies():
 	network_manager.set_peer_mode(network_manager.PeerMode.STEAM)
-	Steam.lobby_created.connect(_on_steam_lobby_created)
-	Steam.lobby_match_list.connect(_on_steam_lobby_match_list)
-	Steam.lobby_joined.connect(_on_steam_lobby_joined) # ✅ added
+
+	if not Steam.lobby_created.is_connected(_on_steam_lobby_created):
+		Steam.lobby_created.connect(_on_steam_lobby_created)
+
+	if not Steam.lobby_match_list.is_connected(_on_steam_lobby_match_list):
+		Steam.lobby_match_list.connect(_on_steam_lobby_match_list)
+
+	if not Steam.lobby_joined.is_connected(_on_steam_lobby_joined):
+		Steam.lobby_joined.connect(_on_steam_lobby_joined)
+
 	refresh_steam_lobby_list()
 
 # -------------------------
