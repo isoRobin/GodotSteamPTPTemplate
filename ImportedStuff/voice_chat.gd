@@ -37,7 +37,7 @@ func check_mic():
 	capture.clear_buffer()
 	pass
 
-@rpc("any_peer", "call_remote", "unreliable_ordered", 2)
+@rpc("any_peer", "call_remote", "unreliable", 2)
 func send_voice(data : PackedVector2Array):
 	if not data.is_empty():
 		for i in range(0, data.size() - 1):
