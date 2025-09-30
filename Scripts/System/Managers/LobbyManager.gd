@@ -81,16 +81,48 @@ func setup_filters():
 	
 	distance_filter.item_selected.connect(_on_distance_filter_changed)
 
+func setup_singleplayer_lobby():
+	network_manager.reset_peer()
+
+func setup_local_lobbies():
+	network_manager.set_peer_mode(network_manager.PeerMode.LOCAL)
+	network_manager.get_peer().peer_connected.connect(_on_local_player_connect_lobby)
+	network_manager.get_peer().peer_disconnected.connect(_on_local_player_disconnect_lobby)
+
 func setup_steam_lobbies():
 	network_manager.set_peer_mode(network_manager.PeerMode.STEAM)
 	Steam.lobby_created.connect(_on_steam_lobby_created)
 	Steam.lobby_match_list.connect(_on_steam_lobby_match_list)
-	Steam.lobby_joined.connect(_on_steam_lobby_joined)
+	Steam.lobby_joined.connect(_on_steam_lobby_joined) # ✅ added
 	refresh_steam_lobby_list()
 
 # -------------------------
 # FILTER CALLBACKS
 # -------------------------
+
+func get_lobbies_with_friends() -> Dictionary:
+	var results: Dictionary = {}
+	for i in range(0, Steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE)):
+		var steam_id: int = Steam.getFriendByIndex(i, Steam.FRIEND_FLAG_IMMEDIATE)
+		var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
+		if game_info.is_empty():
+			continue
+		var app_id: int = game_info['id']
+		var lobby = game_info['lobby']
+		if app_id != Steam.getAppID() or lobby is String:
+			continue
+		if not results.has(lobby):
+			results[lobby] = []
+		results[lobby].append(steam_id)
+	return results
+
+func is_friend_in_lobby(steam_id: int, lobby_id: int) -> bool:
+	var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
+	if game_info.is_empty():
+		return false
+	var app_id: int = game_info.id
+	var lobby = game_info.lobby
+	return app_id == Steam.getAppID() and lobby is int and lobby == lobby_id
 
 func _on_friends_only_filter_changed(toggled: bool):
 	current_filters["friends_only"] = toggled
@@ -130,16 +162,12 @@ func apply_filters():
 			create_lobby_button(lobby_id, lobby_name, current_players, int(max_players), has_password, true)
 	else:
 		Steam.addRequestLobbyListDistanceFilter(current_filters["distance"])
-		
 		if current_filters["name"] != "":
 			Steam.addRequestLobbyListStringFilter("name", current_filters["name"], Steam.LOBBY_COMPARISON_EQUAL)
-		
 		if current_filters["max_players"] > 0:
 			Steam.addRequestLobbyListNumericalFilter("max_players", current_filters["max_players"], Steam.LOBBY_COMPARISON_EQUAL)
-		
 		if current_filters["has_password"]:
 			Steam.addRequestLobbyListStringFilter("has_password", "1", Steam.LOBBY_COMPARISON_EQUAL)
-		
 		Steam.requestLobbyList()
 
 # -------------------------
@@ -149,14 +177,6 @@ func apply_filters():
 func create_singleplayer_lobby():
 	map_spawner.spawn(map_manager.lobby_scene_path)
 	on_singleplayer_lobby_created.emit()
-	
-func update_lobby_name():
-	if steam_lobby_id != 0:  # Make sure we have a valid lobby
-		var current_players = Steam.getNumLobbyMembers(steam_lobby_id)
-		var max_players = host_max_players.value
-		var base_name = Steam.getPersonaName() + "'s Lobby"
-		var formatted_name = "%s (%d/%d)" % [base_name, current_players, max_players]
-		Steam.setLobbyData(steam_lobby_id, "name", formatted_name)
 
 func create_local_lobby():	
 	var err = network_manager.get_peer().create_server(local_port, local_max_players)
@@ -169,19 +189,16 @@ func create_steam_lobby():
 	var lobby_type = LOBBY_TYPES.PUBLIC
 	var is_password_protected = host_password_protected.button_pressed
 	var password = host_password_input.text if is_password_protected else ""
-	
 	if host_friends_only.button_pressed:
 		lobby_type = LOBBY_TYPES.FRIENDS_ONLY
 	elif is_password_protected:
 		lobby_type = LOBBY_TYPES.PRIVATE
-	
 	var max_players = host_max_players.value
-	
 	Steam.createLobby(lobby_type, max_players)
 	print("Requesting Steam to create lobby...")
 
 # -------------------------
-# JOIN FLOW (fixed)
+# JOIN
 # -------------------------
 
 func join_local_lobby():
@@ -192,7 +209,7 @@ func join_local_lobby():
 func join_steam_lobby(id: int) -> void:
 	if await validate_lobby_join(id):
 		print("Requesting Steam to join lobby:", id)
-		Steam.joinLobby(id)
+		Steam.joinLobby(id) # ✅ changed
 	else:
 		print("Invalid password or cancelled")
 
@@ -222,7 +239,6 @@ func _on_steam_lobby_joined(lobby_id: int, chat_permissions: int, locked: bool, 
 	_on_joined_session()
 	print("Joined Steam lobby:", lobby_id)
 
-	# Debug members
 	var num_members = Steam.getNumLobbyMembers(lobby_id)
 	print("Lobby", lobby_id, "has", num_members, "members:")
 	for i in range(num_members):
@@ -235,7 +251,6 @@ func _on_joined_session() -> void:
 	var player = player_scene.instantiate()
 	player.name = "Player_%s" % my_id
 	player.set_multiplayer_authority(my_id)
-
 	var players_node = get_tree().root.find_child("Players", true, false)
 	if players_node:
 		players_node.add_child(player)
@@ -244,117 +259,59 @@ func _on_joined_session() -> void:
 		push_error("Could not find 'Players' node after joining session")
 
 # -------------------------
-# STEAM LOBBY CALLBACKS
+# LOCAL CALLBACKS
+# -------------------------
+
+func _on_local_player_connect_lobby(id):
+	local_lobby_id = id
+	print_rich("Player [color=green]", id, " Joined [/color]")
+	
+func _on_local_player_disconnect_lobby(id):
+	print_rich("Player [color=red]", id, " Disconnected [/color]")
+
+# -------------------------
+# STEAM CREATION CALLBACK
 # -------------------------
 
 func _on_steam_lobby_created(connect: int, lobby_id: int) -> void:
 	if connect == OK or connect == 1:
 		steam_lobby_id = lobby_id
 		print("Steam lobby created! ID:", steam_lobby_id)
-		
 		var err = network_manager.get_peer().host_with_lobby(lobby_id)
 		if err != OK:
 			push_error("Failed to host Steam lobby: %s" % err)
 			return
-		
 		network_manager.update_multiplayer_peer()
 		map_spawner.spawn(map_manager.lobby_scene_path)
 		on_steam_lobby_created.emit()
-		
 		update_lobby_name()
 		Steam.setLobbyData(lobby_id, "max_players", str(host_max_players.value))
-		
 		if host_password_protected.button_pressed:
 			Steam.setLobbyData(lobby_id, "has_password", "1")
 			Steam.setLobbyData(lobby_id, "password", host_password_input.text)
 		else:
 			Steam.setLobbyData(lobby_id, "has_password", "0")
-		
 		Steam.setLobbyMemberLimit(lobby_id, host_max_players.value)
 		Steam.setLobbyJoinable(lobby_id, true)
-		
 		print("Lobby setup complete and joinable.")
 	else:
 		push_error("Steam lobby creation failed: %s" % connect)
 
-func _on_steam_lobby_match_list(lobbies):
-	for lobby in lobbies:
-		var lobby_name = Steam.getLobbyData(lobby, "name")
-		var max_players = Steam.getLobbyData(lobby, "max_players")
-		var current_players = Steam.getNumLobbyMembers(lobby)
-		var has_password = Steam.getLobbyData(lobby, "has_password") == "1"
-		create_lobby_button(lobby, lobby_name, current_players, int(max_players), has_password)
+func update_lobby_name():
+	if steam_lobby_id != 0:
+		var current_players = Steam.getNumLobbyMembers(steam_lobby_id)
+		var max_players = host_max_players.value
+		var base_name = Steam.getPersonaName() + "'s Lobby"
+		var formatted_name = "%s (%d/%d)" % [base_name, current_players, max_players]
+		Steam.setLobbyData(steam_lobby_id, "name", formatted_name)
 
 # -------------------------
-# LOBBY UI HELPERS
-# -------------------------
-
-func create_lobby_button(lobby_id: int, lobby_name: String, current_players: int, max_players: int, has_password: bool, is_friend_lobby: bool = false):
-	var button = Button.new()
-	var button_text = str(lobby_name) + " [" + str(current_players) + "/" + str(max_players) + "]"
-	
-	if has_password:
-		button_text += " 🔒"
-	if is_friend_lobby:
-		button_text += " 👥"
-	
-	button.set_text(button_text)
-	button.set_size(Vector2(100, 5))
-	
-	if is_friend_lobby:
-		button.connect("pressed", Callable(self, "_on_friend_lobby_button_pressed").bind(lobby_id))
-	else:
-		button.connect("pressed", Callable(self, "join_steam_lobby").bind(lobby_id))
-	
-	lobby_v_box_container.add_child(button)
-
-func _on_friend_lobby_button_pressed(lobby_id: int):
-	var friend_lobbies = get_lobbies_with_friends()
-	if friend_lobbies.has(lobby_id):
-		var steam_id = friend_lobbies[lobby_id][0]
-		if is_friend_in_lobby(steam_id, lobby_id):
-			join_steam_lobby(lobby_id)
-		else:
-			print("Friend is no longer in this lobby")
-	else:
-		print("Lobby no longer exists")
-
-# -------------------------
-# FILTER UTILITIES
-# -------------------------
-
-func get_lobbies_with_friends() -> Dictionary:
-	var results: Dictionary = {}
-	for i in range(0, Steam.getFriendCount(Steam.FRIEND_FLAG_IMMEDIATE)):
-		var steam_id: int = Steam.getFriendByIndex(i, Steam.FRIEND_FLAG_IMMEDIATE)
-		var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
-		if game_info.is_empty():
-			continue
-		var app_id: int = game_info['id']
-		var lobby = game_info['lobby']
-		if app_id != Steam.getAppID() or lobby is String:
-			continue
-		if not results.has(lobby):
-			results[lobby] = []
-		results[lobby].append(steam_id)
-	return results
-
-func is_friend_in_lobby(steam_id: int, lobby_id: int) -> bool:
-	var game_info: Dictionary = Steam.getFriendGamePlayed(steam_id)
-	if game_info.is_empty():
-		return false
-	var app_id: int = game_info.id
-	var lobby = game_info.lobby
-	return app_id == Steam.getAppID() and lobby is int and lobby == lobby_id
-
-# -------------------------
-# LOBBY REFRESH
+# REFRESH
 # -------------------------
 
 func refresh_steam_lobby_list():
 	for lobby in lobby_v_box_container.get_children(): 
 		lobby.queue_free()
-	
 	if current_filters["friends_only"]:
 		var friend_lobbies = get_lobbies_with_friends()
 		for lobby_id in friend_lobbies.keys():
@@ -383,12 +340,50 @@ func should_display_lobby(lobby_name: String, max_players: String, has_password:
 		return false
 	return true
 
+func _on_steam_lobby_match_list(lobbies):
+	for lobby in lobbies:
+		var lobby_name = Steam.getLobbyData(lobby, "name")
+		var max_players = Steam.getLobbyData(lobby, "max_players")
+		var current_players = Steam.getNumLobbyMembers(lobby)
+		var has_password = Steam.getLobbyData(lobby, "has_password") == "1"
+		create_lobby_button(lobby, lobby_name, current_players, int(max_players), has_password)
+
 # -------------------------
-# PASSWORD CHECK
+# LOBBY UI
+# -------------------------
+
+func create_lobby_button(lobby_id: int, lobby_name: String, current_players: int, max_players: int, has_password: bool, is_friend_lobby: bool = false):
+	var button = Button.new()
+	var button_text = str(lobby_name) + " [" + str(current_players) + "/" + str(max_players) + "]"
+	if has_password:
+		button_text += " 🔒"
+	if is_friend_lobby:
+		button_text += " 👥"
+	button.set_text(button_text)
+	button.set_size(Vector2(100, 5))
+	if is_friend_lobby:
+		button.connect("pressed", Callable(self, "_on_friend_lobby_button_pressed").bind(lobby_id))
+	else:
+		button.connect("pressed", Callable(self, "join_steam_lobby").bind(lobby_id))
+	lobby_v_box_container.add_child(button)
+
+func _on_friend_lobby_button_pressed(lobby_id: int):
+	var friend_lobbies = get_lobbies_with_friends()
+	if friend_lobbies.has(lobby_id):
+		var steam_id = friend_lobbies[lobby_id][0]
+		if is_friend_in_lobby(steam_id, lobby_id):
+			join_steam_lobby(lobby_id)
+		else:
+			print("Friend is no longer in this lobby")
+	else:
+		print("Lobby no longer exists")
+
+# -------------------------
+# PASSWORD
 # -------------------------
 
 func prompt_for_password() -> String:
-	# TODO: Hook this up to a UI
+	# TODO: Implement in UI
 	return ""
 
 func validate_lobby_join(lobby_id: int) -> bool:
