@@ -63,10 +63,27 @@ signal password_submitted(password: String)
 func _ready():
 	map_spawner.spawn_function = map_manager.spawn_map
 	setup_filters()
-	setup_steam_lobbies()
+
+	# ✅ Connect Steam signals once
+	if not Steam.lobby_created.is_connected(_on_steam_lobby_created):
+		Steam.lobby_created.connect(_on_steam_lobby_created)
+	if not Steam.lobby_match_list.is_connected(_on_steam_lobby_match_list):
+		Steam.lobby_match_list.connect(_on_steam_lobby_match_list)
+	if not Steam.lobby_joined.is_connected(_on_steam_lobby_joined):
+		Steam.lobby_joined.connect(_on_steam_lobby_joined)
+
+	# ✅ Connect Local peer signals once
+	var peer = network_manager.get_peer()
+	if peer and not peer.peer_connected.is_connected(_on_local_player_connect_lobby):
+		peer.peer_connected.connect(_on_local_player_connect_lobby)
+	if peer and not peer.peer_disconnected.is_connected(_on_local_player_disconnect_lobby):
+		peer.peer_disconnected.connect(_on_local_player_disconnect_lobby)
+
+	# Initial Steam lobby refresh
+	refresh_steam_lobby_list()
 
 # -------------------------
-# SETUP
+# SETUP HELPERS
 # -------------------------
 
 func setup_filters():
@@ -86,21 +103,9 @@ func setup_singleplayer_lobby():
 
 func setup_local_lobbies():
 	network_manager.set_peer_mode(network_manager.PeerMode.LOCAL)
-	network_manager.get_peer().peer_connected.connect(_on_local_player_connect_lobby)
-	network_manager.get_peer().peer_disconnected.connect(_on_local_player_disconnect_lobby)
 
 func setup_steam_lobbies():
 	network_manager.set_peer_mode(network_manager.PeerMode.STEAM)
-
-	if not Steam.lobby_created.is_connected(_on_steam_lobby_created):
-		Steam.lobby_created.connect(_on_steam_lobby_created)
-
-	if not Steam.lobby_match_list.is_connected(_on_steam_lobby_match_list):
-		Steam.lobby_match_list.connect(_on_steam_lobby_match_list)
-
-	if not Steam.lobby_joined.is_connected(_on_steam_lobby_joined):
-		Steam.lobby_joined.connect(_on_steam_lobby_joined)
-
 	refresh_steam_lobby_list()
 
 # -------------------------
@@ -216,13 +221,14 @@ func join_local_lobby():
 func join_steam_lobby(id: int) -> void:
 	if await validate_lobby_join(id):
 		print("Requesting Steam to join lobby:", id)
-		Steam.joinLobby(id) # ✅ changed
+		Steam.joinLobby(id) # ✅ fixed flow
 	else:
 		print("Invalid password or cancelled")
 
 func _on_steam_lobby_joined(lobby_id: int, chat_permissions: int, locked: bool, response: int) -> void:
 	if response != OK:
-		push_error("Failed to join Steam lobby. Result code: %s" % response)
+		var reason = STEAM_RESULT_CODES.get(response, "Unknown")
+		push_error("Failed to join Steam lobby. Result code: %s (%s)" % [response, reason])
 		return
 
 	print("Steam confirmed join, now connecting MultiplayerPeer...")
@@ -251,7 +257,7 @@ func _on_steam_lobby_joined(lobby_id: int, chat_permissions: int, locked: bool, 
 	for i in range(num_members):
 		var member_id = Steam.getLobbyMemberByIndex(lobby_id, i)
 		print(" - Member:", member_id)
-
+		
 func _on_joined_session() -> void:
 	var my_id = multiplayer.get_unique_id()
 	var player_scene = preload("res://scenes/Player.tscn")
@@ -400,3 +406,34 @@ func validate_lobby_join(lobby_id: int) -> bool:
 		var entered_password = await prompt_for_password()
 		return entered_password == correct_password
 	return true
+
+
+# -------------------------
+# DEBUG
+# --
+	
+
+# ✅ Steam matchmaking / result codes (for debugging join failures)
+const STEAM_RESULT_CODES = {
+	0: "OK",
+	1: "Fail",
+	2: "No Connection",
+	3: "Invalid Password",
+	4: "Logged In Elsewhere",
+	5: "Invalid Protocol",
+	6: "Invalid Parameter",
+	7: "File Not Found",
+	8: "Busy",
+	9: "Invalid State",
+	10: "Invalid Name",
+	11: "Invalid Email",
+	12: "Duplicate Name",
+	13: "Access Denied",
+	14: "Timeout",
+	15: "Banned",
+	16: "Account Not Found",
+	17: "Invalid Steam ID",
+	18: "Service Unavailable",
+	19: "Not Logged On",
+	20: "Pending",
+}
